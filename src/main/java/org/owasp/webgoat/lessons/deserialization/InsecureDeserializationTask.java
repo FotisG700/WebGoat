@@ -38,9 +38,16 @@ public class InsecureDeserializationTask implements AssignmentEndpoint {
     int delay;
 
     b64token = token.replace('-', '+').replace('_', '/');
-
-    try (ObjectInputStream ois =
-        new ObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(b64token)))) {
+try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(b64token))) {
+    @Override
+  protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+        String allowedClass = "org.owasp.webgoat.lessons.deserialization.VulnerableTaskHolder";
+           if (!desc.getName().equals(allowedClass)) {
+             throw new InvalidClassException("Unauthorized deserialization attempt", desc.getName());
+        }
+           return super.resolveClass(desc);
+    }
+}) {
       before = System.currentTimeMillis();
       Object o = ois.readObject();
       if (!(o instanceof VulnerableTaskHolder)) {
