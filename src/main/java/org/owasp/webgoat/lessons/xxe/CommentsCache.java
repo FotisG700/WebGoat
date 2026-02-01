@@ -76,6 +76,10 @@ public class CommentsCache {
       xif.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // compliant
     }
 
+
+      xif .setProperty(XMLInputFactory.SUPPORT_DTD, false);
+      xif .setProperty(XMLInputFatory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+          
     var xsr = xif.createXMLStreamReader(new StringReader(xml));
 
     var unmarshaller = jc.createUnmarshaller();
